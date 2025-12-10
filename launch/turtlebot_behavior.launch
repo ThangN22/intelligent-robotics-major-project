@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="major_project" name="drive_forward" type="drive_forward.py"/>
+    <node pkg="major_project" name="random_turn" type="random_turn.py"/>
+    <node pkg="major_project" name="behavior" type="behavior.py"/>
+    <node pkg="major_project" name="avoid" type="avoid.py"/>
+    <node pkg="major_project" name="escape" type="escape.py"/>
+    <node pkg="major_project" name="keyboard" type="keyboard.py"/>
+    <node pkg="major_project" name="bumper" type="bumper.py"/>
+</launch>
+

@@ -1,0 +1,2 @@
+bool detected
+bool moveable

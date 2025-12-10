@@ -1,0 +1,11 @@
+<launch>
+  <!-- Launch file for turtlebot laptop -->
+	<!-- Minimal Setup  -->
+	<include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+
+	<!-- 3D Sensing -->
+	<include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+
+	<!-- turtlebot_behavior.launch  -->
+	<include file="$(find major_project)/launch/turtlebot_behavior.launch"/>
+</launch>

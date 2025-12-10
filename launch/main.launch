@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="major_project" name="main_behavior" type="main_behavior.py"/>
+    <node pkg="zbar_ros" name="barcode_reader_node" type="barcode_reader_node" args="image:=/camera/rgb/image_raw"/>
+    <node pkg="major_project" name="confidence" type="confidence.py"/>
+</launch>

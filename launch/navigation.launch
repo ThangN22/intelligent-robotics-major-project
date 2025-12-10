@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="major_project" name="navigation" type="navigation.py"/>
+</launch>
