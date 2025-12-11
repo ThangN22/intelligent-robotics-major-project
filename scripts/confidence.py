@@ -10,6 +10,7 @@ from geometry_msgs.msg import Twist
 # Confidence node that handles processing how confident the robot is in its location
 class Confidence:
     def __init__(self):
+        # Initalize variables and rospy nodes
         rospy.init_node('confidence')
         self.rate = rospy.Rate(2)
         self.pub = rospy.Publisher('confidence', Int32, queue_size = 5)
@@ -17,7 +18,7 @@ class Confidence:
         rospy.Subscriber('detect_obj', ObjectConfidence, self.obj_callback)
         rospy.Subscriber('cmd_vel_mux/input/navi', Twist, self.move_callback)
 
-        self.confidence = 100
+        self.confidence = 100 # location confidence value
         self.confidence_rate = 0.05 # rate at which confidence decreases as we move
 
         while not rospy.is_shutdown():
@@ -40,13 +41,16 @@ class Confidence:
         self.confidence = self.confidence - 1 * self.confidence_rate
 
     def obj_callback(self, data):
+        # Laser scan detected object in correct location
         if data.detected:
-            # Increase confidence
+            # Increase confidence by a higher value if suffering from low surety
             if self.confidence < 30:
                 self.confidence = self.confidence + self.confidence_rate * 2
             else:
+                # Increase confidence by typical value to offset odometry loss
                 self.confidence = min(self.confidence + self.confidence_rate * 0.5, 100.0)
         else:
+            # Expected object is missing
             if data.moveable:
                 # Missing moveable object
                 self.confidence = self.confidence - self.confidence_rate * 1
