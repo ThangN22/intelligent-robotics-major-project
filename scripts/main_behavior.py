@@ -178,44 +178,55 @@ class MainBehavior:
                     self.confidencePub.publish(ObjectConfidence(False, bool(obj[2])))
                     # Object not within bounds
 
+    # Update robot's pose
     def pose_callback(self, data):
         self.pose.callback(data)
 
+    # Navigation node callback
     def move_callback(self, data):
         if data == Twist():
+            # Navigation step is complete
             self.navigating = False
         else:
+            # Actively navigating
             self.navigating = True
         self.drivePub.publish(data)
 
+    # Display node steps for debugging
     def debug_steps(self, steps, node_list):
         for i, n in enumerate(steps):
             node_num = node_list.index(n)
             output = "Step {}: Node_{} at {}".format(i, node_num, n.get_coord())
             self.debugPub.publish(String(output))
 
+    # Display path segments for debugging
     def debug_segments(self, segments):
         for entry in segments:
             self.debugPub.publish(String("Angle: {} Distance: {}".format(entry[0], entry[1])))
 
+    # Get coordinates of each node to travel to
     def get_coord_list(self, node_steps):
         coordinates = []
         for i, n in enumerate(node_steps):
             coordinates.append(n.get_coord())
         return coordinates
 
+    # Navigate along mapped route
     def navigate(self):
         pather = path.PlanPath()
         path_segments = pather.plan(self.get_coord_list(self.path_steps), (0,0,0))
         self.debugPub.publish(String("Starting navigation"))
+        
         # Move until we reach expected node, then go to next step
         for i, segment in enumerate(path_segments):
             self.goal_node = self.path_steps[i]
             self.debugPub.publish(String("Goal node: " + self.goal_node.get_QR()))
             self.debugPub.publish(String("Current node: " + self.current_node.get_QR()))
+            
             # Call navigation node
             self.debugPub.publish(String(str(segment[0])))
             self.debugPub.publish(String(str(segment[1])))
+            # Only begin navigating if we are not already at the goal node
             if (not segment[0] == 0.0) or (not segment[1] == 0.0):
                 self.debugPub.publish(String("values valid"))
                 self.naviPub.publish(PathSegment(segment[0], segment[1]))
@@ -234,10 +245,8 @@ class MainBehavior:
             self.current_node = self.path_steps[i] # Robot believes we have arrived at this node
             self.debugPub.publish(String("Waiting for QR to be viewed"))
             for i in range(30):
+                # Pause to avoid node processing errors
                 self.rate.sleep()
-            #while self.path_steps[i] != self.barcode_node:
-                # Spin while waiting to find next node ID
-                #pass
 
             self.debugPub.publish(String("Arrived at next node"))
         self.debugPub.publish(String("Reached goal node"))
